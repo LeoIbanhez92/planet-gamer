@@ -22,7 +22,7 @@ export class CategoriaService {
         });
     }
 
-    //! CONSULTA POR ID
+    //? CONSULTA POR ID
 
     async findById(id: number): Promise<Categoria> {
         //? SELEC * FROM TB_POSTAGENS WHERE ID = ? 
