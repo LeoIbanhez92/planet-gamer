@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Produto } from "../entities/produto.entity";
 import { ILike, Repository } from "typeorm";
 import { DeleteResult } from "typeorm/browser";
+import { CategoriaService } from "../../categoria/services/categoria.service";
 
 @Injectable()
 export class ProdutoService {
@@ -10,7 +11,7 @@ export class ProdutoService {
     constructor(
         @InjectRepository(Produto)
         private produtoRepository: Repository<Produto>,
-        //private readonly categoriaService: CategoriaService
+        private readonly categoriaService: CategoriaService
     ) { }
 
     async findAll(): Promise<Produto[]> {
@@ -18,7 +19,7 @@ export class ProdutoService {
         //? SELECT * FROM tb_postagem
         return this.produtoRepository.find({
             relations:{
-                //categoria: true
+                categoria: true
             }
         });
     }
@@ -32,7 +33,7 @@ export class ProdutoService {
                 id
             },
             relations:{
-                //categoria: true
+                categoria: true
             }
         });
 
@@ -50,14 +51,14 @@ export class ProdutoService {
                 produto: ILike(`%${produto}%`),
             },
             relations:{
-                //categoria: true
+                categoria: true
             }
         });
     }
 
     async create(produto: Produto): Promise<Produto>{
 
-        //await this.categoriaService.findById(produto.categotia.id); 
+        await this.categoriaService.findById(produto.categoria.id); 
 
         //? INSERT INTO TB_POSTAGEM (TITULO, TEXTO) VALUES (?, ?) -> VALORES INFORMADO PELO USUARIO
 
@@ -74,7 +75,7 @@ export class ProdutoService {
         await this.findById(produto.id);
 
         //? CHECA SE O TEMA DA POSTAGEM EXISTE
-        //await this.categoriaService.findById(produto.categoria.id);
+        await this.categoriaService.findById(produto.categoria.id);
 
         return this.produtoRepository.save(produto);
     }
