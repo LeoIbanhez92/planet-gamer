@@ -13,7 +13,7 @@ import { CategoriaModule } from './categoria/categoria.module';
       port:3306,
       username: 'root',
       password: 'root',
-      database: 'db_planetGamer',
+      database: 'db_planet_gamer',
       entities: [Produto, Categoria],
       synchronize: true,
       logging: true,

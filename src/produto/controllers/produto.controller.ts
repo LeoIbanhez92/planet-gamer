@@ -4,7 +4,7 @@ import { ProdutoService } from "../services/produto.service";
 
 
 
-@Controller("/produto")
+@Controller("/produtos")
 export class ProdutoController{
 
     constructor(
