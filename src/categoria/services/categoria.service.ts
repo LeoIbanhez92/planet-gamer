@@ -25,7 +25,7 @@ export class CategoriaService {
     //? CONSULTA POR ID
 
     async findById(id: number): Promise<Categoria> {
-        //? SELEC * FROM TB_POSTAGENS WHERE ID = ? 
+        
         const categoria = await this.categoriaRepository.findOne({
             where: {
                 id
@@ -55,14 +55,14 @@ export class CategoriaService {
     }
 
     async create(categoria: Categoria): Promise<Categoria> {
-        //? INSERT INTO TB_POSTAGEM (TITULO, TEXTO) VALUES (?, ?) -> VALORES INFORMADO PELO USUARIO
+        
 
         return await this.categoriaRepository.save(categoria);
     }
 
 
     async update(categoria: Categoria): Promise<Categoria> {
-        //? UPDATE  TB_POSTAGEM SET TITULO = ?-> VALORES INFORMADO PELO USUARIO
+        
 
         if (!categoria.id || categoria.id <= 0)
             throw new HttpException("O ID do tema é inválido", HttpStatus.BAD_REQUEST);
@@ -74,7 +74,7 @@ export class CategoriaService {
     async delete(id: number): Promise<DeleteResult> {
         await this.findById(id);
 
-        //? DELETE TB_POSTAGEM FROM id = ?
+        
         return this.categoriaRepository.delete(id);
     }
 

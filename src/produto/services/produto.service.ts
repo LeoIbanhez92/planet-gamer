@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Produto } from "../entities/produto.entity";
-import { ILike, Repository } from "typeorm";
+import { ILike, LessThanOrEqual, MoreThanOrEqual, Repository } from "typeorm";
 import { DeleteResult } from "typeorm/browser";
 import { CategoriaService } from "../../categoria/services/categoria.service";
 
@@ -16,75 +16,92 @@ export class ProdutoService {
 
     async findAll(): Promise<Produto[]> {
 
-        //? SELECT * FROM tb_postagem
         return this.produtoRepository.find({
-            relations:{
+            relations: {
                 categoria: true
             }
         });
     }
 
-    //! CONSULTA POR ID
-
     async findById(id: number): Promise<Produto> {
-        //? SELEC * FROM TB_POSTAGENS WHERE ID = ? 
+        
         const produto = await this.produtoRepository.findOne({
             where: {
                 id
             },
-            relations:{
+            relations: {
                 categoria: true
             }
         });
 
-        if(!produto)
+        if (!produto)
             throw new HttpException('Produto não encontrado!', HttpStatus.NOT_FOUND);
 
         return produto;
     }
 
-    //! CONSULTA POR TITULO
-
-    async findAllByProduto(produto: string): Promise<Produto[]>{
+    async findAllByProduto(produto: string): Promise<Produto[]> {
         return this.produtoRepository.find({
             where: {
                 produto: ILike(`%${produto}%`),
             },
-            relations:{
+            relations: {
                 categoria: true
             }
         });
     }
 
-    async create(produto: Produto): Promise<Produto>{
+    async findByPrecoMenor(preco: number): Promise<Produto[]> {
+        return this.produtoRepository.find({
+            where: {
+                preco: LessThanOrEqual(preco)
+            },
+            order: {
+                preco: 'DESC'
+            }
+        })
+    }
 
-        await this.categoriaService.findById(produto.categoria.id); 
+    async findByPrecoMaior(preco: number): Promise<Produto[]> {
+        return this.produtoRepository.find({
+            where: {
+                preco: MoreThanOrEqual(preco)
+            },
+            order: {
+                preco: 'ASC'
+            }
+        })
+    }
 
-        //? INSERT INTO TB_POSTAGEM (TITULO, TEXTO) VALUES (?, ?) -> VALORES INFORMADO PELO USUARIO
+    async create(produto: Produto): Promise<Produto> {
+
+        await this.categoriaService.findById(produto.categoria.id);
+
+
 
         return await this.produtoRepository.save(produto);
     }
 
-    async update(produto: Produto): Promise<Produto>{
-        //? UPDATE  TB_POSTAGEM SET TITULO = ?-> VALORES INFORMADO PELO USUARIO
+    async update(produto: Produto): Promise<Produto> {
 
-        if(!produto.id || produto.id <= 0)
+
+        if (!produto.id || produto.id <= 0)
             throw new HttpException("O ID do Produto é inválido", HttpStatus.BAD_REQUEST);
 
-        //? CHECA SE A POSTAGEM EXISTE
+
         await this.findById(produto.id);
 
-        //? CHECA SE O TEMA DA POSTAGEM EXISTE
+
         await this.categoriaService.findById(produto.categoria.id);
 
         return this.produtoRepository.save(produto);
     }
 
-    async delete(id: number): Promise <DeleteResult>{
+    async delete(id: number): Promise<DeleteResult> {
         await this.findById(id);
 
-        //? DELETE TB_POSTAGEM FROM id = ?
+
         return this.produtoRepository.delete(id);
     }
-    
+
 }
